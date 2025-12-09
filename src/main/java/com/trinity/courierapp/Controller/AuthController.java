@@ -1,6 +1,5 @@
 package com.trinity.courierapp.Controller;
 
-
 import com.trinity.courierapp.DTO.AuthRequestDto;
 import com.trinity.courierapp.DTO.ClientRegistrationRequestDto;
 import com.trinity.courierapp.DTO.CourierRegistrationRequestDto;
@@ -38,13 +37,12 @@ public class AuthController {
     private JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public String authenticateUser(@Valid @RequestBody AuthRequestDto authRequestDto) { /// bindingResult for errors (if I return request entity)
+    public String authenticateUser(@Valid @RequestBody AuthRequestDto authRequestDto) { /// bindingResult for errors (if
+                                                                                        /// I return request entity)
         Authentication authentication = authenticationManager.authenticate(
                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                         authRequestDto.getEmail(),
-                        authRequestDto.getPassword()
-                )
-        );
+                        authRequestDto.getPassword()));
 
         final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return jwtUtils.generateToken(userDetails.getUsername());
@@ -52,30 +50,27 @@ public class AuthController {
 
     @PostMapping("/client_signup")
     public String registerClient(@Valid @RequestBody ClientRegistrationRequestDto dto) {
-        if (userRepository.existsByEmail(dto.getEmail())){
+        if (userRepository.existsByEmail(dto.getEmail())) {
             return "Email Already Exists";
         }
-        final User newUser = new User(dto.getFullName(), dto.getPhoneNumber(), passwordEncoder.encode(dto.getPassword()), dto.getEmail(), dto.getUserType());
+        final User newUser = new User(dto.getFullName(), dto.getPhoneNumber(),
+                passwordEncoder.encode(dto.getPassword()), dto.getEmail(), dto.getUserType());
         userRepository.save(newUser);
         return "Registration Successful";
     }
 
-
     @PostMapping("/courier_signup")
     public String registerCourier(@Valid @RequestBody CourierRegistrationRequestDto dto) {
-        if (userRepository.existsByEmail(dto.getEmail())){
+        if (userRepository.existsByEmail(dto.getEmail())) {
             return "Email Already Exists";
         }
-        final User newUser = new User(dto.getFullName(), dto.getPhoneNumber(), dto.getPassword(), dto.getEmail(), dto.getUserType());
+        final User newUser = new User(dto.getFullName(), dto.getPhoneNumber(), dto.getPassword(), dto.getEmail(),
+                dto.getUserType());
         userRepository.save(newUser);
-        final Courier courier = new Courier(dto.getCourierGps(),dto.getVehicleType(), dto.getCourierStatus(), dto.getVehicleNumber());
+        final Courier courier = new Courier(dto.getCourierGps(), dto.getVehicleType(), dto.getCourierStatus(),
+                dto.getVehicleNumber());
         courier.setCourierUser(newUser);
         courierRepository.save(courier);
         return "Registration Successful";
     }
 }
-
-
-
-
-
